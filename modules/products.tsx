@@ -16,34 +16,51 @@ const Products = ({ products, categories }: ProductsProps) => {
 
   const searchValue = debounce(search, 700);
 
+  // API base URL (lokal development va production uchun)
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
   // Fetch products on search/category change
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/products?categoryId=${category}&name_like=${searchValue}`
+        );
+        const data = await res.json();
+        setProductList(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
     if (searchValue || category) {
-      fetch(
-        `http://localhost:3001/products?categoryId=${category}&name_like=${searchValue}`
-      )
-        .then((res) => res.json())
-        .then((data) => setProductList(data));
+      fetchProducts();
     } else {
       setProductList(products);
     }
   }, [searchValue, category]);
 
-    // DELETE product
-    const handleDelete = async (id: number) => {
-        if (!confirm("Are you sure you want to delete this product?")) return;
+  // DELETE product
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
 
-        const res = await fetch(`http://localhost:3001/products/${id}`, {
+    try {
+      const res = await fetch(`${API_URL}/products/${id}`, {
         method: "DELETE",
-        });
+      });
 
-        if (res.ok) {
+      if (res.ok) {
         setProductList(productList.filter((p) => p.id !== id));
         alert("Product deleted successfully!");
-        } else {
+      } else {
         alert("Failed to delete product");
-        }
-    };
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Failed to delete product");
+    }
+  };
 
   // UPDATE product
   const handleUpdate = async (product: ProductType) => {
@@ -58,20 +75,25 @@ const Products = ({ products, categories }: ProductsProps) => {
       return;
     }
 
-    const res = await fetch(`http://localhost:3001/products/${product.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName, price: priceNumber }),
-    });
+    try {
+      const res = await fetch(`${API_URL}/products/${product.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName, price: priceNumber }),
+      });
 
-    if (res.ok) {
-      setProductList(
-        productList.map((p) =>
-          p.id === product.id ? { ...p, name: newName, price: priceNumber } : p
-        )
-      );
-      alert("Product updated successfully!");
-    } else {
+      if (res.ok) {
+        setProductList(
+          productList.map((p) =>
+            p.id === product.id ? { ...p, name: newName, price: priceNumber } : p
+          )
+        );
+        alert("Product updated successfully!");
+      } else {
+        alert("Failed to update product");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
       alert("Failed to update product");
     }
   };
@@ -88,7 +110,9 @@ const Products = ({ products, categories }: ProductsProps) => {
         />
         <select
           value={category || "0"}
-          onChange={(e) => setCategory(e.target.value === "0" ? "" : e.target.value)}
+          onChange={(e) =>
+            setCategory(e.target.value === "0" ? "" : e.target.value)
+          }
           className="w-55 border p-3 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
         >
           <option value="0">All Categories</option>
@@ -133,7 +157,7 @@ const Products = ({ products, categories }: ProductsProps) => {
                 Edit
               </button>
               <button
-                onClick={() =>handleDelete(Number(item.id))}
+                onClick={() => handleDelete(Number(item.id))}
                 className="flex-1 px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
               >
                 Delete
