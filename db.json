@@ -1,0 +1,41 @@
+{
+  "products": [
+    {
+      "id": "2",
+      "name": "iPhone 15 Pro",
+      "price": 999,
+      "categoryId": "1"
+    },
+    {
+      "id": "3",
+      "name": "iPad Ai",
+      "price": 599,
+      "categoryId": "2"
+    }
+  ],
+  "category": [
+    {
+      "id": "1",
+      "name": "Phones"
+    },
+    {
+      "id": "2",
+      "name": "Laptops"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "username": "sevinch",
+      "password": "123",
+      "fullName": "sevinch"
+    },
+    {
+      "id": "2",
+      "username": "admin",
+      "password": "adminpassword",
+      "fullName": "Admin User"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
