@@ -29,21 +29,21 @@ const Products = ({ products, categories }: ProductsProps) => {
     }
   }, [searchValue, category]);
 
-  // DELETE product
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    // DELETE product
+    const handleDelete = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this product?")) return;
 
-    const res = await fetch(`http://localhost:3001/products/${id}`, {
-      method: "DELETE",
-    });
+        const res = await fetch(`http://localhost:3001/products/${id}`, {
+        method: "DELETE",
+        });
 
-    if (res.ok) {
-      setProductList(productList.filter((p) => p.id !== id));
-      alert("Product deleted successfully!");
-    } else {
-      alert("Failed to delete product");
-    }
-  };
+        if (res.ok) {
+        setProductList(productList.filter((p) => p.id !== id));
+        alert("Product deleted successfully!");
+        } else {
+        alert("Failed to delete product");
+        }
+    };
 
   // UPDATE product
   const handleUpdate = async (product: ProductType) => {
@@ -133,7 +133,7 @@ const Products = ({ products, categories }: ProductsProps) => {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(item.id)}
+                onClick={() =>handleDelete(Number(item.id))}
                 className="flex-1 px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
               >
                 Delete
